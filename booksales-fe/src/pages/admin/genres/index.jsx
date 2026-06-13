@@ -1,62 +1,86 @@
 import { useEffect, useState } from "react";
-import { getGenres } from "../../../_service/genres";
 import { Link } from "react-router-dom";
+import { getGenres, deleteGenre } from "../../../_service/genres";
 
 export default function AdminGenres() {
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
-    const fetchGenres = async () => {
+    const fetchData = async () => {
       const data = await getGenres();
       setGenres(data);
     };
-    fetchGenres();
+    fetchData();
   }, []);
 
+const handleDelete = async (id) => {
+  if (confirm("Apakah Anda yakin ingin menghapus genre ini?")) {
+    try {
+      await deleteGenre(id);
+      const data = await getGenres();
+      setGenres(data);
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menghapus data");
+    }
+  }
+};
+
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
-      <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-        <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-          <div className="w-full md:w-1/2">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Management Genres
-            </h2>
-          </div>
-          <div className="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-            <Link
-              to="/admin/genres/create"
-              className="flex items-center justify-center text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
-            >
-              Add Genre
-            </Link>
-          </div>
+    <div className="p-6 bg-gray-50 min-h-screen dark:bg-gray-950 pt-24">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-lg shadow">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+            Kelola Genre
+          </h1>
+          <Link
+            to="/admin/genres/create"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700"
+          >
+            Tambah Genre
+          </Link>
         </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-4 py-3">
-                  ID
-                </th>
-                <th scope="col" className="px-4 py-3">
-                  Genre Name
-                </th>
+                <th className="px-6 py-3">Nama Genre</th>
+                <th className="px-6 py-3">Deskripsi</th>
+                <th className="px-6 py-3 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {genres.length > 0 ? (
                 genres.map((genre) => (
-                  <tr key={genre.id} className="border-b dark:border-gray-700">
-                    <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      {genre.id}
+                  <tr
+                    key={genre.id}
+                    className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                  >
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                      {genre.name}
                     </td>
-                    <td className="px-4 py-3">{genre.name}</td>
+                    <td className="px-6 py-4">{genre.description}</td>
+                    <td className="px-6 py-4 text-center flex justify-center gap-2">
+                      <Link
+                        to={`/admin/genres/edit/${genre.id}`}
+                        className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(genre.id)}
+                        className="text-red-600 dark:text-red-400 hover:underline font-medium ml-2"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="2" className="text-center py-4 text-gray-500">
-                    Data tidak ditemukan
+                  <td colSpan="3" className="text-center py-4">
+                    Tidak ada data genre.
                   </td>
                 </tr>
               )}
@@ -64,6 +88,6 @@ export default function AdminGenres() {
           </table>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
