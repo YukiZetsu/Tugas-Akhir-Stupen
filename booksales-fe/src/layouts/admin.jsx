@@ -10,14 +10,14 @@ export default function AdminLayout() {
 
   useEffect(() => {
     if (!token || !decodedData || !decodedData.success) {
-      navigate("/login")
+      navigate("/login");
     }
 
     const role = userInfo.role;
     if (role !== "admin" || !role) {
       navigate("/");
     }
-  }, [token, decodedData, navigate])
+  }, [token, decodedData, navigate]);
 
   const handleLogout = async () => {
     if (token) {
@@ -25,11 +25,12 @@ export default function AdminLayout() {
       localStorage.removeItem("userInfo");
     }
     navigate("/login");
-  }
+  };
 
   return (
     <>
-      <div className="antialiased bg-gray-50 dark:bg-gray-900">
+      {/* 1. Tambahkan min-h-screen di div terluar ini 👇 */}
+      <div className="antialiased bg-gray-50 dark:bg-gray-900 min-h-screen">
         <nav className="bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50">
           <div className="flex flex-wrap justify-between items-center">
             <div className="flex justify-start items-center">
@@ -108,7 +109,7 @@ export default function AdminLayout() {
                 to={"/"}
                 className="bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none"
               >
-                {userInfo.name}
+                {userInfo?.name}
               </Link>
               <button
                 type="button"
@@ -123,7 +124,6 @@ export default function AdminLayout() {
                   alt="user photo"
                 />
               </button>
-              {/* <!-- Dropdown menu --> */}
               <div
                 className="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                 id="dropdown"
@@ -154,8 +154,7 @@ export default function AdminLayout() {
           </div>
         </nav>
 
-        {/* <!-- Sidebar --> */}
-
+        {/* */}
         <aside
           className="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
           aria-label="Sidenav"
@@ -249,7 +248,7 @@ export default function AdminLayout() {
               </li>
             </ul>
 
-            <ul className="pt-5 mt-5 space-y-2 borderT border-gray-200 dark:border-gray-700">
+            <ul className="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
               <li>
                 <Link
                   to={"/admin/books"}
@@ -317,17 +316,18 @@ export default function AdminLayout() {
               <li>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center p-2 text-base font-medium text-red-900 rounded-lg transition duration-75 bg-red-100 hover:bg-red-200 dark:hover:bg-red-700 dark:text-black group"
+                  className="w-full flex items-center p-2 text-base font-medium text-red-900 rounded-lg transition duration-75 bg-red-100 hover:bg-red-200 dark:hover:bg-red-700 dark:text-black group"
                 >
-                  <span className="ml-3">Logout</span>
+                  <span className="ml-3 font-semibold">Logout</span>
                 </button>
               </li>
             </ul>
           </div>
         </aside>
 
-        <main className="p-4 md:ml-64 h-auto pt-20">
-          <div className="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-auto px-4 pt-4 pb-6">
+        {/* 2. UBAH DI SINI: Pakai min-h-[calc(100vh-5rem)] agar tingginya pas dan background merata 👇 */}
+        <main className="p-4 md:ml-64 min-h-[calc(100vh-5rem)] pt-20 bg-gray-50 dark:bg-gray-900">
+          <div className="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 min-h-[calc(100vh-7rem)] px-4 pt-4 pb-6 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
             <Outlet />
           </div>
         </main>

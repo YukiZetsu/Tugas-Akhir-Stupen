@@ -1,4 +1,4 @@
-import { useJwt } from "react-jwt";
+import { jwtDecode } from "jwt-decode";
 import { API } from "../_api";
 
 export const login = async ({ email, password }) => {
@@ -13,17 +13,21 @@ export const login = async ({ email, password }) => {
 
 export const logout = async ({ token }) => {
   try {
-    const { data } = await API.post("/logout", { token }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-      }
-    })
+    const { data } = await API.post(
+      "/logout",
+      { token },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      },
+    );
     localStorage.removeItem("accessToken");
-    return data
+    return data;
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const register = async ({ name, email, username, password }) => {
   try {
@@ -38,32 +42,37 @@ export const register = async ({ name, email, username, password }) => {
     console.error(error);
     throw error;
   }
-}
-
-
+};
 
 export const userDecodeToken = (token) => {
-  const { decodedToken, isExpired } = useJwt(token);
-
   try {
-    if (isExpired){
+    if (!token) {
+      return {
+        success: false,
+        message: "Token tidak ditemukan",
+        data: null,
+      };
+    }
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    if (decodedToken.exp && decodedToken.exp < currentTime) {
       return {
         success: false,
         message: "Token Expired",
-        data: null
-      }
+        data: null,
+      };
     }
 
     return {
       success: true,
       message: "Token Valid",
-      data: decodedToken
-    }
+      data: decodedToken,
+    };
   } catch (error) {
     return {
       success: false,
       message: error.message,
-      data: null
-    }
+      data: null,
+    };
   }
-}
+};

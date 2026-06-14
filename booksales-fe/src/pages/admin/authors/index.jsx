@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAuthors } from "../../../_service/authors";
+import { getAuthors, deleteAuthor } from "../../../_service/authors";
 import { Link } from "react-router-dom";
 
 export default function AdminAuthors() {
@@ -12,6 +12,18 @@ export default function AdminAuthors() {
     };
     fetchAuthors();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Apakah kamu yakin ingin menghapus author ini?")) {
+      try {
+        await deleteAuthor(id);
+        setAuthors(authors.filter((author) => author.id !== id));
+        alert("Author berhasil dihapus!");
+      } catch (error) {
+        alert("Gagal menghapus author.");
+      }
+    }
+  };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
@@ -41,6 +53,9 @@ export default function AdminAuthors() {
                 <th scope="col" className="px-4 py-3">
                   Author Name
                 </th>
+                <th scope="col" className="px-4 py-3 text-center">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -51,11 +66,19 @@ export default function AdminAuthors() {
                       {author.id}
                     </td>
                     <td className="px-4 py-3">{author.name}</td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleDelete(author.id)}
+                        className="text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-400 font-medium"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="2" className="text-center py-4 text-gray-500">
+                  <td colSpan="3" className="text-center py-4 text-gray-500">
                     Data tidak ditemukan
                   </td>
                 </tr>

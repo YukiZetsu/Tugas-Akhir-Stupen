@@ -13,7 +13,7 @@ export default function Login() {
 
   const token = localStorage.getItem("accessToken");
   const decodedData = userDecodeToken(token);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -34,7 +34,11 @@ export default function Login() {
       localStorage.setItem("accessToken", response.token);
       localStorage.setItem("userInfo", JSON.stringify(response.user));
 
-      return navigate(response.user.role === "admin" ? "/admin" : "/");
+      if (response.user.role === "admin") {
+        return navigate("/admin");
+      } else {
+        return navigate("/");
+      }
     } catch (error) {
       setError(error?.response?.data?.message);
     } finally {
@@ -44,7 +48,15 @@ export default function Login() {
 
   useEffect(() => {
     if (token && decodedData && decodedData.success) {
-      navigate("/admin");
+      const userInfoStr = localStorage.getItem("userInfo");
+      if (userInfoStr) {
+        const userInfo = JSON.parse(userInfoStr);
+        if (userInfo.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }
     }
   }, [token, decodedData, navigate]);
 
@@ -58,12 +70,13 @@ export default function Login() {
                 Sign in to your account
               </h1>
 
-              {error && (
-                <div className="text-red-500 text-sm">{error}</div>
-              )}
+              {error && <div className="text-red-500 text-sm">{error}</div>}
 
-
-              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6" action="#">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4 md:space-y-6"
+                action="#"
+              >
                 <div>
                   <label
                     htmlFor="email"
@@ -116,7 +129,6 @@ export default function Login() {
                       className="font-light text-gray-500 dark:text-gray-300"
                     >
                       I accept the{" "}
-                      
                       <a
                         className="font-medium text-indigo-600 hover:underline dark:text-indigo-500"
                         href="#"
